@@ -13,6 +13,15 @@
 
 @class SPPoolObject;
 
+@interface SPPoolInfo : NSObject
+{
+  @public
+    Class poolClass;
+    SPPoolObject *lastElement;
+}
+
+@end
+
 /** ------------------------------------------------------------------------------------------------
  
  The SPPoolObject class is an alternative to the base class `NSObject` that manages a pool of 
@@ -29,21 +38,16 @@
  To use memory pooling for another class, you just have to inherit from SPPoolObject and implement
  the following method:
  
- 	+ (SPPoolInfo *) poolInfo
+ 	+ (SPPoolInfo *)poolInfo
  	{
- 	    static SPPoolInfo poolInfo;
- 	    return &poolInfo;
+ 	    static SPPoolInfo *poolInfo = nil;
+ 	    if (!poolInfo) poolInfo = [[SPPoolInfo alloc] init];
+ 	    return poolInfo;
  	}
  
  ------------------------------------------------------------------------------------------------- */
 
 #ifndef DISABLE_MEMORY_POOLING
-
-typedef struct
-{
-    Class poolClass;
-    SPPoolObject *lastElement;
-} SPPoolInfo;
 
 @interface SPPoolObject : NSObject 
 {
@@ -62,14 +66,14 @@ typedef struct
 
 #else
 
-@class SPPoolInfo;
+@interface SPPoolObject : NSObject 
 
-@interface SPPoolObject : NSObject
+/// Dummy implementation of SPPoolObject method to simplify switching between NSObject and SPPoolObject.
++ (SPPoolInfo *)poolInfo;
 
 /// Dummy implementation of SPPoolObject method to simplify switching between NSObject and SPPoolObject.
 + (int)purgePool;
 
 @end
-
 
 #endif
