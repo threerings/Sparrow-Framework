@@ -133,12 +133,7 @@
 
 + (float)distanceFromPoint:(SPPoint*)p1 toPoint:(SPPoint*)p2
 {
-    return sqrtf([SPPoint distanceSqFromPoint:p1 toPoint:p2]);
-}
-
-+ (float)distanceSqFromPoint:(SPPoint *)p1 toPoint:(SPPoint *)p2
-{
-    return SQ(p2->mX - p1->mX) + SQ(p2->mY - p1->mY);
+    return sqrtf(SQ(p2->mX - p1->mX) + SQ(p2->mY - p1->mY));
 }
 
 + (SPPoint *)interpolateFromPoint:(SPPoint *)p1 toPoint:(SPPoint *)p2 ratio:(float)ratio

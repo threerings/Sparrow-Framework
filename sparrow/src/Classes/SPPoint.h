@@ -44,20 +44,11 @@
 /// @name Methods
 // --------------
 
-/// Returns the negation of this point
-- (SPPoint *)negate;
-
 /// Adds a point to the current point and returns the resulting point.
 - (SPPoint *)addPoint:(SPPoint *)point;
 
-/// Adds a point to the current point and returns the resulting point.
-- (SPPoint *)addX:(float)x y:(float)y;
-
 /// Substracts a point from the current point and returns the resulting point.
 - (SPPoint *)subtractPoint:(SPPoint *)point;
-
-/// Substracts a point from the current point and returns the resulting point.
-- (SPPoint *)subtractX:(float)x y:(float)y;
 
 /// Scales the point by a certain factor and returns the resulting point.
 - (SPPoint *)scaleBy:(float)scalar;
