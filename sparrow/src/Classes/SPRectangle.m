@@ -73,9 +73,9 @@
 
 - (SPRectangle*)intersectionWithRectangle:(SPRectangle*)rectangle
 {
-    float left = MAX(mX, rectangle->mX);
-    float right = MIN(mX + mWidth, rectangle->mX + rectangle->mWidth);
-    float top = MAX(mY, rectangle->mY);
+    float left   = MAX(mX, rectangle->mX);
+    float right  = MIN(mX + mWidth, rectangle->mX + rectangle->mWidth);
+    float top    = MAX(mY, rectangle->mY);
     float bottom = MIN(mY + mHeight, rectangle->mY + rectangle->mHeight);
     
     if (left > right || top > bottom)
@@ -86,9 +86,9 @@
 
 - (SPRectangle*)uniteWithRectangle:(SPRectangle*)rectangle
 {
-    float left = MIN(mX, rectangle->mX);
-    float right = MAX(mX + mWidth, rectangle->mX + rectangle->mWidth);
-    float top = MIN(mY, rectangle->mY);
+    float left   = MIN(mX, rectangle->mX);
+    float right  = MAX(mX + mWidth, rectangle->mX + rectangle->mWidth);
+    float top    = MIN(mY, rectangle->mY);
     float bottom = MAX(mY + mHeight, rectangle->mY + rectangle->mHeight);
     return [SPRectangle rectangleWithX:left y:top width:right-left height:bottom-top];
 }
@@ -98,72 +98,26 @@
     mX = mY = mWidth = mHeight = 0;
 }
 
-- (void)setX:(float)x y:(float)y width:(float)width height:(float)height 
-{
-    mX = x;
-    mY = y;
-    mWidth = width;
-    mHeight = height;
-}
+- (float)top { return mY; }
+- (void)setTop:(float)value { mY = value; }
 
-- (void)addX:(float)x y:(float)y 
-{
-    float x1 = MIN(mX, x);
-    float x2 = MAX(mX + mWidth, x);
-    float y1 = MIN(mY, y);
-    float y2 = MAX(mY + mHeight, y);
-    [self setX:x1 y:y1 width:x2 - x1 height:y2 - y1];
-}
+- (float)bottom { return mY + mHeight; }
+- (void)setBottom:(float)value { mHeight = value - mY; }
 
-- (void)addPoint:(SPPoint *)p 
-{
-    [self addX:p.x y:p.y];
-}
+- (float)left { return mX; }
+- (void)setLeft:(float)value { mX = value; }
 
-- (float)minX 
-{
-    return mX;
-}
+- (float)right { return mX + mWidth; }
+- (void)setRight:(float)value { mWidth = value - mX; }
 
-- (float)minY
-{
-    return mY;
-}
+- (SPPoint *)topLeft { return [SPPoint pointWithX:mX y:mY]; }
+- (void)setTopLeft:(SPPoint *)value { mX = value.x; mY = value.y; }
 
-- (float)maxX
-{
-    return mX + mWidth;
-}
+- (SPPoint *)bottomRight { return [SPPoint pointWithX:mX+mWidth y:mY+mHeight]; }
+- (void)setBottomRight:(SPPoint *)value { self.right = value.x; self.bottom = value.y; }
 
-- (float)maxY
-{
-    return mY + mHeight;
-}
-
-- (float)centerX
-{
-    return mX + (mWidth / 2.0f);
-}
-
-- (float)centerY
-{
-    return mY + (mHeight / 2.0f);
-}
-
-- (SPPoint *)min
-{
-    return [[[SPPoint alloc] initWithX:self.minX y:self.minY] autorelease];
-}
-
-- (SPPoint *)max
-{
-    return [[[SPPoint alloc] initWithX:self.maxX y:self.maxY] autorelease];
-}
-
-- (SPPoint *)center
-{
-    return [[[SPPoint alloc] initWithX:self.centerX y:self.centerY] autorelease];
-}
+- (SPPoint *)size { return [SPPoint pointWithX:mWidth y:mHeight]; }
+- (void)setSize:(SPPoint *)value { mWidth = value.x; mHeight = value.y; }
 
 - (BOOL)isEmpty
 {

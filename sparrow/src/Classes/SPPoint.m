@@ -53,17 +53,22 @@
     return sqrtf(SQ(mX) + SQ(mY));
 }
 
+- (float)lengthSquared 
+{
+    return SQ(mX) + SQ(mY);
+}
+
 - (float)angle
 {
     return atan2f(mY, mX);
 }
 
-- (BOOL)isZero
+- (BOOL)isOrigin
 {
-    return mX == 0 && mY == 0;
+    return mX == 0.0f && mY == 0.0f;
 }
 
-- (SPPoint *)negate
+- (SPPoint *)invert
 {
     SPPoint *result = [[SPPoint alloc] initWithX:-mX y:-mY];
     return [result autorelease];
@@ -71,23 +76,13 @@
 
 - (SPPoint*)addPoint:(SPPoint*)point
 {
-    return [self addX:point->mX y:point->mY];
-}
-
-- (SPPoint *)addX:(float)x y:(float)y
-{
-    SPPoint *result = [[SPPoint alloc] initWithX:mX+x y:mY+y];    
+    SPPoint *result = [[SPPoint alloc] initWithX:mX+point->mX y:mY+point->mY];
     return [result autorelease];
 }
 
 - (SPPoint*)subtractPoint:(SPPoint*)point
 {
-    return [self subtractX:point->mX y:point->mY];
-}
-
-- (SPPoint *)subtractX:(float)x y:(float)y
-{
-    SPPoint *result = [[SPPoint alloc] initWithX:mX-x y:mY-y];    
+    SPPoint *result = [[SPPoint alloc] initWithX:mX-point->mX y:mY-point->mY]; 
     return [result autorelease];
 }
 
@@ -97,7 +92,7 @@
     return [result autorelease];
 }
 
-- (SPPoint *)rotateBy:(float)angle
+- (SPPoint *)rotateBy:(float)angle  
 {
     float sina = sinf(angle);
     float cosa = cosf(angle);
@@ -118,12 +113,6 @@
 - (float)dot:(SPPoint *)other
 {
     return mX * other->mX + mY * other->mY;
-}
-
-- (float)angleBetween:(SPPoint *)other 
-{
-    float cos = [self dot:other] / (self.length * other.length);
-    return cos >= 1.0f ? 0.0f : acosf(cos);
 }
 
 - (BOOL)isEqual:(id)other 
@@ -162,6 +151,12 @@
 + (SPPoint *)pointWithPolarLength:(float)length angle:(float)angle
 {
     return [[[SPPoint alloc] initWithPolarLength:length angle:angle] autorelease];
+}
+
++ (float)angleBetweenPoint:(SPPoint *)p1 andPoint:(SPPoint *)p2
+{
+    float cos = [p1 dot:p2] / (p1.length * p2.length);
+    return cos >= 1.0f ? 0.0f : acosf(cos);
 }
 
 + (SPPoint *)pointWithX:(float)x y:(float)y
