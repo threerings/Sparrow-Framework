@@ -85,9 +85,6 @@
 @property (nonatomic, assign) float x;
 @property (nonatomic, assign) float y;
 
-/// The squared distance to the origin (or the squared length of the vector)
-@property (readonly) float lengthSq;
-
 /// The distance to the origin (or the length of the vector).
 @property (readonly) float length;
 

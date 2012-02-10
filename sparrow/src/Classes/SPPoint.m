@@ -43,11 +43,6 @@
     return [self initWithX:0.0f y:0.0f];
 }
 
-- (float)lengthSq 
-{
-    return SQ(mX) + SQ(mY);
-}
-
 - (float)length
 {
     return sqrtf(SQ(mX) + SQ(mY));
