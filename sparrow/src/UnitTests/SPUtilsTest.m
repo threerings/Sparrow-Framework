@@ -100,6 +100,49 @@
     STAssertNil(nilPath, @"found nil-path (2x)");
 }
 
+- (void)testIdiom
+{
+    NSString *filename = @"image_idiom.png";
+    
+    NSString *absolutePath = [SPUtils absolutePathToFile:filename withScaleFactor:1.0f 
+                                                   idiom:UIUserInterfaceIdiomPhone];
+    STAssertTrue([absolutePath rangeOfString:@"image_idiom~iphone.png"].length != 0,
+                 @"idiom image not found");
+}
+
+- (void)testScaledIdiom
+{
+    NSString *filename = @"image_idiom.png";
+    
+    NSString *absolutePath = [SPUtils absolutePathToFile:filename withScaleFactor:2.0f 
+                                                   idiom:UIUserInterfaceIdiomPhone];
+    STAssertTrue([absolutePath rangeOfString:@"image_idiom@2x~iphone.png"].length != 0,
+                 @"idiom image not found");
+}
+
+- (void)testGetSdTextureFallback
+{
+    NSString *filename = @"image_only_sd.png";
+    
+    NSString *absolutePath = [SPUtils absolutePathToFile:filename withScaleFactor:2.0f];
+    STAssertNotNil(absolutePath, @"1x fallback resource not found");    
+    
+    uint length = [absolutePath rangeOfString:filename].length;
+    STAssertTrue(length != 0, @"1x fallback resource not found");
+}
+
+- (void)testOnlyHdTextureAvailable
+{
+    NSString *filename = @"image_only_hd.png";
+    NSString *fullFilename = [filename stringByAppendingSuffixToFilename:@"@2x"];
+    
+    NSString *absolutePath = [SPUtils absolutePathToFile:filename withScaleFactor:2.0f];
+    STAssertNotNil(absolutePath, @"2x resource not found");    
+    
+    uint length = [absolutePath rangeOfString:fullFilename].length;
+    STAssertTrue(length != 0, @"2x resource not found");
+}
+
 @end
 
 #endif
