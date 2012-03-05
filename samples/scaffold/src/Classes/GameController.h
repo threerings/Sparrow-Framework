@@ -9,7 +9,10 @@
 @interface GameController : SPStage
 {
   @private
-    Game *game;
+    Game *mGame;
 }
+
+- (void)rotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+                       animationTime:(double)time;
 
 @end

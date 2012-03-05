@@ -5,8 +5,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+#import "GameController.h"
 
-@property (nonatomic, readonly) SPView *sparrowView;
+@interface ViewController : UIViewController
+{
+  @private
+    SPView *mSparrowView;
+}
+
+- (id)initWithSparrowView:(SPView *)sparrowView;
 
 @end
