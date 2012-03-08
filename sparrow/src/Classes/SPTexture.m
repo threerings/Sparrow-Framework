@@ -101,7 +101,20 @@ enum PVRPixelType
     else if ([[path lowercaseString] hasSuffix:@".pvr.gz"])
         return [self initWithContentsOfPvrFile:fullPath gzCompressed:YES];
     else
-        return [self initWithContentsOfImage:[UIImage imageWithContentsOfFile:fullPath]];        
+    {
+        // load image via this crazy workaround to be sure that path is not extended with scale
+        NSData *data = [[NSData alloc] initWithContentsOfFile:fullPath];
+        UIImage *image1 = [[UIImage alloc] initWithData:data];
+        UIImage *image2 = [[UIImage alloc] initWithCGImage:image1.CGImage 
+                          scale:[fullPath contentScaleFactor] orientation:UIImageOrientationUp];
+        self = [self initWithContentsOfImage:image2];
+        
+        [image2 release];
+        [image1 release];
+        [data release];
+
+        return self;
+    }
 }
 
 - (id)initWithWidth:(float)width height:(float)height draw:(SPTextureDrawingBlock)drawingBlock
@@ -248,10 +261,7 @@ enum PVRPixelType
 
     void *imageData = (unsigned char *)header + header->headerSize;
     SPGLTexture *glTexture = [[SPGLTexture alloc] initWithData:imageData properties:properties];
-    
-    NSString *baseFilename = [[path lastPathComponent] stringByDeletingFullPathExtension];
-    if ([baseFilename rangeOfString:@"@2x"].location == baseFilename.length - 3)
-        glTexture.scale = 2.0f;
+    glTexture.scale = [path contentScaleFactor];
     
     SP_RELEASE_POOL(pool);
     
