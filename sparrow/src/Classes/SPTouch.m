@@ -17,7 +17,6 @@
 @implementation SPTouch
 
 @synthesize timestamp = mTimestamp;
-@synthesize touchId = mTouchId;
 @synthesize globalX = mGlobalX;
 @synthesize globalY = mGlobalY;
 @synthesize previousGlobalX = mPreviousGlobalX;
@@ -60,11 +59,6 @@
 - (void)setTimestamp:(double)timestamp
 {
     mTimestamp = timestamp;
-}
-
-- (void)setTouchId:(int)touchId
-{
-    mTouchId = touchId;
 }
 
 - (void)setGlobalX:(float)x

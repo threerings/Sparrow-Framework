@@ -15,7 +15,6 @@
 @interface SPTouch (Internal)
 
 - (void)setTimestamp:(double)timestamp;
-- (void)setTouchId:(int)touchId;
 - (void)setGlobalX:(float)x;
 - (void)setGlobalY:(float)y;
 - (void)setPreviousGlobalX:(float)x;
