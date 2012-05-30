@@ -102,7 +102,12 @@ static void setValues(SPMatrix *matrix, float a, float b, float c, float d, floa
 
 - (void)rotateBy:(float)angle
 {
-    [self skewXBy:angle yBy:angle];
+    float cos = cosf(angle);
+    float sin = sinf(angle);
+    
+    setValues(self, mA*cos  - mB*sin,    mA*sin  + mB*cos, 
+                    mC*cos  - mD*sin,    mC*sin  + mD*cos, 
+                    mTx*cos - mTy * sin, mTx*sin + mTy*cos);
 }
 
 - (void)identity
