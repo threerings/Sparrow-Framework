@@ -43,9 +43,6 @@ static NSMutableDictionary *bitmapFonts = nil;
 @synthesize fontSize = mFontSize;
 @synthesize hAlign = mHAlign;
 @synthesize vAlign = mVAlign;
-@synthesize autoSize = mAutoSize;
-@synthesize autoSizeMaxWidth = mAutoSizeMaxWidth;
-@synthesize autoSizeMaxHeight = mAutoSizeMaxHeight;
 @synthesize border = mBorder;
 @synthesize color = mColor;
 @synthesize kerning = mKerning;
@@ -130,57 +127,23 @@ static NSMutableDictionary *bitmapFonts = nil;
     float fontSize = mFontSize == SP_NATIVE_FONT_SIZE ? SP_DEFAULT_FONT_SIZE : mFontSize;
     
     UILineBreakMode lbm = UILineBreakModeTailTruncation;
-    UIFont* font = [UIFont fontWithName:mFontName size:fontSize];
-    CGSize textSize;
-    switch (mAutoSize)
-    {
-        case SPAutoSizeNone:
-            textSize = [mText sizeWithFont:font constrainedToSize:CGSizeMake(width, height) lineBreakMode:lbm];
-            break;
-            
-        case SPAutoSizeSingleLine:
-            textSize = (mAutoSizeMaxWidth > 0 ? 
-                        [mText sizeWithFont:font forWidth:mAutoSizeMaxWidth lineBreakMode:lbm] : 
-                        [mText sizeWithFont:font]);
-            break;
-            
-        case SPAutoSizeMultiline:
-            textSize = [mText sizeWithFont:font 
-                         constrainedToSize: CGSizeMake(mAutoSizeMaxWidth > 0 ? mAutoSizeMaxWidth : FLT_MAX, 
-                                                       mAutoSizeMaxHeight > 0 ? mAutoSizeMaxHeight : FLT_MAX) 
-                             lineBreakMode:lbm];
-            break;
-    }
+    CGSize textSize = [mText sizeWithFont:[UIFont fontWithName:mFontName size:fontSize] 
+                        constrainedToSize:CGSizeMake(width, height) lineBreakMode:lbm];
     
     float xOffset = 0;
-    if (mAutoSize == SPAutoSizeNone)
-    {
-        if (mHAlign == SPHAlignCenter)      xOffset = (width - textSize.width) / 2.0f;
-        else if (mHAlign == SPHAlignRight)  xOffset =  width - textSize.width;
-    }
+    if (mHAlign == SPHAlignCenter)      xOffset = (width - textSize.width) / 2.0f;
+    else if (mHAlign == SPHAlignRight)  xOffset =  width - textSize.width;
     
     float yOffset = 0;
-    if (mAutoSize == SPAutoSizeNone)
-    {
-        if (mVAlign == SPVAlignCenter)      yOffset = (height - textSize.height) / 2.0f;
-        else if (mVAlign == SPVAlignBottom) yOffset =  height - textSize.height;
-    }
+    if (mVAlign == SPVAlignCenter)      yOffset = (height - textSize.height) / 2.0f;
+    else if (mVAlign == SPVAlignBottom) yOffset =  height - textSize.height;
     
     mTextArea.x = xOffset; 
     mTextArea.y = yOffset;
     mTextArea.width = textSize.width; 
     mTextArea.height = textSize.height;
     
-    if (mAutoSize != SPAutoSizeNone)
-    {
-        mHitArea.width = textSize.width;
-        mHitArea.height = textSize.height;
-    }
-    
-    float actualWidth = (mAutoSize == SPAutoSizeNone ? width : textSize.width);
-    float actualHeight = (mAutoSize == SPAutoSizeNone ? height : textSize.height);
-    
-    SPTexture *texture = [[SPTexture alloc] initWithWidth:actualWidth height:actualHeight
+    SPTexture *texture = [[SPTexture alloc] initWithWidth:width height:height
                                                     scale:[SPStage contentScaleFactor]
                                                colorSpace:SPColorSpaceAlpha
                                                      draw:^(CGContextRef context)
@@ -189,16 +152,14 @@ static NSMutableDictionary *bitmapFonts = nil;
         {
             CGContextSetGrayStrokeColor(context, 1.0f, 1.0f);
             CGContextSetLineWidth(context, 1.0f);
-            CGContextStrokeRect(context, CGRectMake(0.5f, 0.5f, actualWidth-1, actualHeight-1));
+            CGContextStrokeRect(context, CGRectMake(0.5f, 0.5f, width-1, height-1));
         }
         
         CGContextSetGrayFillColor(context, 1.0f, 1.0f);        
         
-        if (mAutoSize == SPAutoSizeSingleLine)
-            [mText drawAtPoint:CGPointMake(0, 0) forWidth:actualWidth withFont:font lineBreakMode:lbm];
-        else 
-            [mText drawInRect:CGRectMake(0, yOffset, actualWidth, actualHeight) withFont:font
-                lineBreakMode:lbm alignment:(UITextAlignment)mHAlign];
+        [mText drawInRect:CGRectMake(0, yOffset, width, height)
+                 withFont:[UIFont fontWithName:mFontName size:fontSize] 
+            lineBreakMode:lbm alignment:(UITextAlignment)mHAlign];
     }];
     
     SPImage *image = [SPImage imageWithTexture:texture];
@@ -216,19 +177,12 @@ static NSMutableDictionary *bitmapFonts = nil;
                     format:@"bitmap font %@ not registered!", mFontName];       
  
     SPDisplayObject *contents = [bitmapFont createDisplayObjectWithWidth:mHitArea.width 
-      height:mHitArea.height text:mText fontSize:mFontSize color:mColor 
-      hAlign:mHAlign vAlign:mVAlign autoSize:mAutoSize autoSizeMaxWidth:mAutoSizeMaxWidth 
-      autoSizeMaxHeight:mAutoSizeMaxHeight border:mBorder kerning:mKerning];
+        height:mHitArea.height text:mText fontSize:mFontSize color:mColor
+        hAlign:mHAlign vAlign:mVAlign border:mBorder kerning:mKerning];    
     
     SPRectangle *textBounds = [(SPDisplayObjectContainer *)contents childAtIndex:0].bounds;
     mTextArea.x = textBounds.x; mTextArea.y = textBounds.y;
-    mTextArea.width = textBounds.width; mTextArea.height = textBounds.height;
-    
-    if (mAutoSize != SPAutoSizeNone)
-    {
-        mHitArea.x = mTextArea.x; mHitArea.y = mTextArea.y;
-        mHitArea.width = mTextArea.width; mHitArea.height = mTextArea.height;
-    }
+    mTextArea.width = textBounds.width; mTextArea.height = textBounds.height;    
     
     return contents;    
 }
@@ -241,7 +195,6 @@ static NSMutableDictionary *bitmapFonts = nil;
 
 - (SPRectangle*)boundsInSpace:(SPDisplayObject*)targetCoordinateSpace
 {
-    if (mAutoSize != SPAutoSizeNone && mRequiresRedraw) [self redrawContents];
     return [mHitArea boundsInSpace:targetCoordinateSpace];
 }
 
@@ -251,24 +204,14 @@ static NSMutableDictionary *bitmapFonts = nil;
     // changing the size should just make the texture bigger/smaller, 
     // keeping the size of the text/font unchanged. (this applies to setHeight:, as well.)
     
-    // Setting a specific width or height sets autoSize to SPAutoSizeNone
-    
-    if (width != mHitArea.width || mAutoSize != SPAutoSizeNone)
-    {
-        mAutoSize = SPAutoSizeNone;
-        mHitArea.width = width;
-        mRequiresRedraw = YES;
-    }
+    mHitArea.width = width;
+    mRequiresRedraw = YES;
 }
 
 - (void)setHeight:(float)height
 {
-    if (height != mHitArea.height || mAutoSize != SPAutoSizeNone)
-    {
-        mAutoSize = SPAutoSizeNone;
-        mHitArea.height = height;
-        mRequiresRedraw = YES;
-    }
+    mHitArea.height = height;
+    mRequiresRedraw = YES;
 }
 
 - (void)setText:(NSString *)text
@@ -324,33 +267,6 @@ static NSMutableDictionary *bitmapFonts = nil;
     if (vAlign != mVAlign)
     {
         mVAlign = vAlign;
-        mRequiresRedraw = YES;
-    }
-}
-
-- (void)setAutoSize:(SPAutoSize)autoSize
-{
-    if (autoSize != mAutoSize)
-    {
-        mAutoSize = autoSize;
-        mRequiresRedraw = YES;
-    }
-}
-
-- (void)setAutoSizeMaxWidth:(float)autoSizeMaxWidth
-{
-    if (autoSizeMaxWidth != mAutoSizeMaxWidth)
-    {
-        mAutoSizeMaxWidth = autoSizeMaxWidth;
-        mRequiresRedraw = YES;
-    }
-}
-
-- (void)setAutoSizeMaxHeight:(float)autoSizeMaxHeight
-{
-    if (autoSizeMaxHeight != mAutoSizeMaxHeight)
-    {
-        mAutoSizeMaxHeight = autoSizeMaxHeight;
         mRequiresRedraw = YES;
     }
 }
