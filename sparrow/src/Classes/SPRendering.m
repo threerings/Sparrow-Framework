@@ -47,7 +47,8 @@
     if (mClipRect != nil)
     {
         SPRectangle *clip = [support pushClipRect:[self clipBoundsInSpace:self.stage]];
-        // Don't bother rendering our children if our clipping bounds are empty
+        // Don't bother rendering our children if our clipping bounds
+        // are empty
         if (clip.isEmpty)
         {
             [support popClipRect];
