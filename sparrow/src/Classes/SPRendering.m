@@ -44,17 +44,18 @@
 
 - (void)render:(SPRenderSupport *)support
 {    
-    float alpha = self.alpha;
-    
-    if (mClipRect != nil) {
+    if (mClipRect != nil)
+    {
         SPRectangle *clip = [support pushClipRect:[self clipBoundsInSpace:self.stage]];
-        // Don't bother rendering our children if our clipping bounds
-        // are empty
-        if (clip.isEmpty) {
+        // Don't bother rendering our children if our clipping bounds are empty
+        if (clip.isEmpty)
+        {
             [support popClipRect];
             return;
         }
     }
+    
+    float alpha = self.alpha;
     
     for (SPDisplayObject *child in mChildren)
     {
@@ -73,9 +74,8 @@
         }
     }
     
-    if (mClipRect != nil) {
+    if (mClipRect != nil)
         [support popClipRect];
-    }
 }
 
 @end
