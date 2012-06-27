@@ -172,7 +172,6 @@
     return [[[self class] allocWithZone:zone] initWithX:mX y:mY];
 }
 
-#ifndef DISABLE_MEMORY_POOLING
 #pragma mark SPPoolObject
 
 + (SPPoolInfo *)poolInfo
@@ -181,6 +180,5 @@
     if (!poolInfo) poolInfo = [[SPPoolInfo alloc] init];
     return poolInfo;
 }
-#endif
 
 @end

@@ -170,7 +170,6 @@ static void setValues(SPMatrix *matrix, float a, float b, float c, float d, floa
                                                      tx:mTx ty:mTy];
 }
 
-#ifndef DISABLE_MEMORY_POOLING
 #pragma mark SPPoolObject
 
 + (SPPoolInfo *)poolInfo
@@ -179,6 +178,5 @@ static void setValues(SPMatrix *matrix, float a, float b, float c, float d, floa
     if (!poolInfo) poolInfo = [[SPPoolInfo alloc] init];
     return poolInfo;
 }
-#endif
 
 @end
