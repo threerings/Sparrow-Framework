@@ -23,15 +23,6 @@
 
 @end
 
-#define SP_IMPLEMENT_MEMORY_POOL() \
-    + (SPPoolInfo *)poolInfo \
-    {   \
-        static dispatch_once_t once; \
-        static SPPoolInfo *poolInfo = nil;  \
-        dispatch_once(&once, ^{ poolInfo = [[SPPoolInfo alloc] init]; }); \
-        return poolInfo;    \
-    }   \
-
 /** ------------------------------------------------------------------------------------------------
  
  The SPPoolObject class is an alternative to the base class `NSObject` that manages a pool of 
@@ -45,10 +36,15 @@
  Sparrow uses this class for `SPPoint`, `SPRectangle` and `SPMatrix`, as they are created very often 
  as helper objects.
  
- To use memory pooling for another class, you just have to inherit from SPPoolObject and put
- the following macro somewhere in your implementation:
+ To use memory pooling for another class, you just have to inherit from SPPoolObject and implement
+ the following method:
  
-    SP_IMPLEMENT_MEMORY_POOL();
+ 	+ (SPPoolInfo *)poolInfo
+ 	{
+ 	    static SPPoolInfo *poolInfo = nil;
+ 	    if (!poolInfo) poolInfo = [[SPPoolInfo alloc] init];
+ 	    return poolInfo;
+ 	}
  
  ------------------------------------------------------------------------------------------------- */
 
@@ -58,7 +54,7 @@
 {
   @private
     SPPoolObject *mPoolPredecessor;
-    volatile uint32_t mRetainCount;
+    uint mRetainCount;
 }
 
 /// The pool info structure needed to access the pool. Needs to be implemented in any inheriting class.

@@ -172,6 +172,11 @@ static void setValues(SPMatrix *matrix, float a, float b, float c, float d, floa
 
 #pragma mark SPPoolObject
 
-SP_IMPLEMENT_MEMORY_POOL();
++ (SPPoolInfo *)poolInfo
+{
+    static SPPoolInfo *poolInfo = nil;
+    if (!poolInfo) poolInfo = [[SPPoolInfo alloc] init];
+    return poolInfo;
+}
 
 @end
